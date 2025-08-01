@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일본 구매대행 계산기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #fdf2f8 0%, #faf5ff 100%);
+        }
+        .gradient-purple {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+        }
+        .gradient-pink {
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+        }
+        .item-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .item-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="max-w-4xl mx-auto p-4">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+            <!-- 헤더 -->
+            <div class="text-center mb-8">
+                <div class="flex items-center justify-center gap-3 mb-4">
+                    <div class="w-8 h-8 bg-pink-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white text-sm font-bold">계</span>
+                    </div>
+                    <h1 class="text-3xl font-bold text-gray-800">일본 구매대행 계산기</h1>
+                </div>
+                <p class="text-gray-600">원하시는 상품의 예상 비용을 미리 확인해보세요!</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- 입력 섹션 -->
+                <div class="space-y-6">
+                    <!-- 상품정보 -->
+                    <div class="bg-pink-50 p-6 rounded-xl border border-pink-100">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <div class="w-5 h-5 bg-pink-600 rounded flex items-center justify-center">
+                                <span class="text-white text-xs">📦</span>
+                            </div>
+                            상품 정보
+                        </h2>
+                        
+                        <div class="space-y-4">
+                            <div id="items-container">
+                                <!-- 상품들이 여기에 동적으로 추가됩니다 -->
+                            </div>
+                            
+                            <button onclick="addItem()" class="w-full bg-pink-100 hover:bg-pink-200 text-pink-700 font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 border border-pink-300">
+                                <span class="text-lg">+</span>
+                                상품 추가
+                            </button>
+                            
+                            <div class="bg-white p-3 rounded-lg border border-pink-200">
+                                <div class="text-sm text-gray-600" id="items-summary">
+                                    총 0개 상품 • ¥0
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 배송정보 -->
+                    <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <div class="w-5 h-5 bg-blue-600 rounded flex items-center justify-center">
+                                <span class="text-white text-xs">🚛</span>
+                            </div>
+                            배송 정보
+                        </h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    일본 국내배송비
+                                    <span class="text-xs text-gray-500 ml-2">(보통 500~800엔)</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="number" id="domesticShipping" oninput="calculateTotal()" class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg" placeholder="500">
+                                    <span class="absolute left-3 top-3 text-gray-500">¥</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    패키지 무게 선택 <span class="text-pink-600">*</span>
+                                </label>
+                                <select id="packageWeight" onchange="calculateTotal()" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg bg-white">
+                                    <option value="">무게를 선택해주세요</option>
+                                    <option value="0.5">0.5kg - ¥630</option>
+                                    <option value="1.0">1.0kg - ¥730</option>
+                                    <option value="1.5">1.5kg - ¥830</option>
+                                    <option value="2.0">2.0kg - ¥930</option>
+                                    <option value="2.5">2.5kg - ¥1,030</option>
+                                    <option value="3.0">3.0kg - ¥1,130</option>
+                                    <option value="3.5">3.5kg - ¥1,230</option>
+                                    <option value="4.0">4.0kg - ¥1,330</option>
+                                    <option value="4.5">4.5kg - ¥1,430</option>
+                                    <option value="5.0">5.0kg - ¥1,530</option>
+                                    <option value="5.5">5.5kg - ¥1,630</option>
+                                    <option value="6.0">6.0kg - ¥1,730</option>
+                                    <option value="6.5">6.5kg - ¥1,830</option>
+                                    <option value="7.0">7.0kg - ¥1,930</option>
+                                    <option value="7.5">7.5kg - ¥2,030</option>
+                                    <option value="8.0">8.0kg - ¥2,130</option>
+                                    <option value="8.5">8.5kg - ¥2,230</option>
+                                    <option value="9.0">9.0kg - ¥2,330</option>
+                                    <option value="9.5">9.5kg - ¥2,430</option>
+                                    <option value="10.0">10.0kg - ¥2,530</option>
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">* 무게를 모르시면 1~3kg 정도로 예상해보세요</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    환율 (1엔 = ?원)
+                                    <span class="text-xs text-gray-500 ml-2">(입력안하면 9.5로 계산합니다)</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="number" id="exchangeRate" oninput="calculateTotal()" step="0.01" class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg" placeholder="9.5">
+                                    <span class="absolute left-3 top-3 text-gray-500">₩</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    관세/통관비 (선택사항)
+                                    <span class="text-xs text-gray-500 ml-2">(20만원 이하는 보통 면세)</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="number" id="customsFee" oninput="calculateTotal()" class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg" placeholder="0">
+                                    <span class="absolute left-3 top-3 text-gray-500">₩</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 동의사항 -->
+                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <div class="w-5 h-5 bg-gray-600 rounded flex items-center justify-center">
+                                <span class="text-white text-xs">📋</span>
+                            </div>
+                            이용 안내
+                        </h2>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <input type="checkbox" id="agreement1" onchange="checkAgreements()" class="mt-1 w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                <label for="agreement1" class="text-sm text-gray-700 leading-relaxed">
+                                    추가 박스 포장이 필요한 경우 / 깨지기 쉬운 상품의 경우 추가비용이 들어갈 수 있습니다.
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-start gap-3">
+                                <input type="checkbox" id="agreement2" onchange="checkAgreements()" class="mt-1 w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                <label for="agreement2" class="text-sm text-gray-700 leading-relaxed">
+                                    상품 불량/하자는 제조사 책임으로 대행업체에서는 교환/환불이 불가합니다.
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-start gap-3">
+                                <input type="checkbox" id="agreement3" onchange="checkAgreements()" class="mt-1 w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                <label for="agreement3" class="text-sm text-gray-700 leading-relaxed">
+                                    편의를 위한 모의 계산기이며 환율 변동에 따라 실제 결제시 가격이 달라질 수 있습니다.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 견적서 생성 -->
+                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <div class="space-y-4">
+                            <button id="quoteButton" onclick="toggleQuote()" disabled class="w-full font-semibold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+                                <span class="text-lg">💬</span>
+                                약관 동의 후 이용 가능
+                            </button>
+                            
+                            <p id="agreementMessage" class="text-center text-sm text-gray-500">모든 약관에 동의해주세요</p>
+                            
+                            <div id="quoteContainer" class="hidden bg-white border-2 border-pink-200 rounded-lg p-4">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-sm font-medium text-gray-700">견적서</span>
+                                    <button onclick="copyQuote()" class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-2 rounded flex items-center gap-1 transition-colors">
+                                        <span>📋</span>
+                                        복사
+                                    </button>
+                                </div>
+                                <pre id="quoteContent" class="text-sm text-gray-800 whitespace-pre-wrap bg-gray-50 p-4 rounded border max-h-80 overflow-y-auto"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 결과 섹션 -->
+                <div class="space-y-6">
+                    <!-- 계산 결과 -->
+                    <div class="gradient-purple text-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <div class="w-5 h-5 bg-white bg-opacity-20 rounded flex items-center justify-center">
+                                <span class="text-sm">💳</span>
+                            </div>
+                            예상 비용
+                        </h2>
+                        
+                        <div class="space-y-3" id="results">
+                            <div class="flex justify-between items-center py-2">
+                                <span>상품비</span>
+                                <span class="font-semibold" id="result-itemPrice">¥0</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center py-2">
+                                <span>일본 배송비</span>
+                                <span class="font-semibold" id="result-domesticShipping">¥0</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center py-2">
+                                <span>국제배송비</span>
+                                <span class="font-semibold" id="result-internationalShipping">¥0</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center py-2">
+                                <span>대행수수료 (10%)</span>
+                                <span class="font-semibold" id="result-agencyFee">¥0</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center py-2">
+                                <span>결제수수료 (3%)</span>
+                                <span class="font-semibold" id="result-paymentFee">¥0</span>
+                            </div>
+                            
+                            <div class="border-t border-purple-300 pt-3 mt-4">
+                                <div class="flex justify-between items-center py-2">
+                                    <span>일본 총액</span>
+                                    <span class="font-semibold" id="result-totalYen">¥0</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center py-2">
+                                    <span class="text-sm" id="exchange-info">한국 환산액 (1엔=9.5원)</span>
+                                    <span class="font-semibold" id="result-totalKrw">₩0</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center py-2" id="customs-row" style="display: none;">
+                                    <span>관세/통관비</span>
+                                    <span class="font-semibold" id="result-customsFee">₩0</span>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white bg-opacity-20 rounded-lg p-4 mt-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xl font-bold">총 결제예상금액</span>
+                                    <span class="text-2xl font-bold" id="result-finalTotal">₩0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 안내사항 -->
+                    <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                        <h3 class="font-semibold text-yellow-800 mb-2">💡 안내사항</h3>
+                        <ul class="text-sm text-yellow-700 space-y-1">
+                            <li>• 실제 금액은 환율 변동에 따라 달라질 수 있습니다</li>
+                            <li>• 부피가 큰 상품은 부피중량이 적용될 수 있습니다</li>
+                            <li>• 약 20만원 초과 시 관부가세가 발생합니다</li>
+                            <li>• 대형화물의 경우 추가 화물 택배비가 부과됩니다</li>
+                            <li>• 정확한 견적은 상담 후 확정됩니다</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let itemCounter = 1;
+        let items = [];
+        let results = {
+            totalItemPrice: 0,
+            totalQuantity: 0,
+            agencyFee: 0,
+            totalDomesticShipping: 0,
+            totalInternationalShipping: 0,
+            totalPaymentFee: 0,
+            totalCustomsFee: 0,
+            totalYen: 0,
+            totalKrw: 0,
+            finalTotal: 0,
+            currentExchangeRate: 9.5
+        };
+
+        // 패밀리 요금제 배송비 테이블
+        const familyShippingRates = {
+            0.5: 630, 1.0: 730, 1.5: 830, 2.0: 930, 2.5: 1030, 3.0: 1130, 3.5: 1230, 4.0: 1330,
+            4.5: 1430, 5.0: 1530, 5.5: 1630, 6.0: 1730, 6.5: 1830, 7.0: 1930, 7.5: 2030, 8.0: 2130,
+            8.5: 2230, 9.0: 2330, 9.5: 2430, 10.0: 2530
+        };
+
+        // 페이지 로드 시 초기 상품 추가
+        window.onload = function() {
+            addItem();
+        };
+
+        function addItem() {
+            const itemId = itemCounter++;
+            items.push({ id: itemId, price: '', quantity: 1 });
+            renderItems();
+        }
+
+        function removeItem(id) {
+            if (items.length > 1) {
+                items = items.filter(item => item.id !== id);
+                renderItems();
+            }
+        }
+
+        function updateItem(id, field, value) {
+            const item = items.find(item => item.id === id);
+            if (item) {
+                if (field === 'quantity') {
+                    item[field] = parseInt(value) || 1;
+                } else {
+                    item[field] = value;
+                }
+                calculateTotal();
+            }
+        }
+
+        function renderItems() {
+            const container = document.getElementById('items-container');
+            container.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'bg-white p-4 rounded-lg border border-pink-200 item-card';
+                itemDiv.innerHTML = `
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm font-medium text-gray-700">상품 ${index + 1}</span>
+                        ${items.length > 1 ? `<button onclick="removeItem(${item.id})" class="text-red-500 hover:text-red-700 p-1 rounded">
+                            <span class="text-lg">−</span>
+                        </button>` : ''}
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">
+                                가격 <span class="text-pink-600">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="number" value="${item.price}" oninput="updateItem(${item.id}, 'price', this.value)" class="w-full pl-6 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent text-sm" placeholder="5000">
+                                <span class="absolute left-2 top-2 text-gray-500 text-sm">¥</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">수량</label>
+                            <input type="number" value="${item.quantity}" min="1" oninput="updateItem(${item.id}, 'quantity', this.value)" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent text-sm">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(itemDiv);
+            });
+
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            // 상품 총액 계산
+            const totalItemPrice = items.reduce((sum, item) => {
+                const price = parseFloat(item.price) || 0;
+                return sum + (price * item.quantity);
+            }, 0);
+
+            const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+
+            // 기타 비용 계산
+            const domesticShipping = parseFloat(document.getElementById('domesticShipping').value) || 0;
+            const packageWeight = document.getElementById('packageWeight').value;
+            const internationalShipping = packageWeight ? (familyShippingRates[parseFloat(packageWeight)] || 0) : 0;
+            const exchangeRate = parseFloat(document.getElementById('exchangeRate').value) || 9.5;
+            const customsFee = parseFloat(document.getElementById('customsFee').value) || 0;
+
+            // 수수료 계산
+            const paymentFee = (totalItemPrice + domesticShipping) * 0.03;
+            const agencyFee = (totalItemPrice + domesticShipping + internationalShipping + paymentFee) * 0.10;
+
+            // 총액 계산
+            const totalYen = totalItemPrice + agencyFee + domesticShipping + internationalShipping + paymentFee;
+            const totalKrw = totalYen * exchangeRate;
+            const finalTotal = totalKrw + customsFee;
+
+            // 결과 저장
+            results = {
+                totalItemPrice,
+                totalQuantity,
+                agencyFee,
+                totalDomesticShipping: domesticShipping,
+                totalInternationalShipping: internationalShipping,
+                totalPaymentFee: paymentFee,
+                totalCustomsFee: customsFee,
+                totalYen,
+                totalKrw,
+                finalTotal,
+                currentExchangeRate: exchangeRate
+            };
+
+            // UI 업데이트
+            updateUI();
+        }
+
+        function updateUI() {
+            // 상품 요약
+            document.getElementById('items-summary').textContent = 
+                `총 ${results.totalQuantity}개 상품 • ¥${formatYen(results.totalItemPrice)}`;
+
+            // 계산 결과
+            document.getElementById('result-itemPrice').textContent = `¥${formatYen(results.totalItemPrice)}`;
+            document.getElementById('result-domesticShipping').textContent = `¥${formatYen(results.totalDomesticShipping)}`;
+            document.getElementById('result-internationalShipping').textContent = `¥${formatYen(results.totalInternationalShipping)}`;
+            document.getElementById('result-agencyFee').textContent = `¥${formatYen(results.agencyFee)}`;
+            document.getElementById('result-paymentFee').textContent = `¥${formatYen(results.totalPaymentFee)}`;
+            document.getElementById('result-totalYen').textContent = `¥${formatYen(results.totalYen)}`;
+            document.getElementById('result-totalKrw').textContent = `₩${formatNumber(results.totalKrw)}`;
+            document.getElementById('result-finalTotal').textContent = `₩${formatNumber(results.finalTotal)}`;
+
+            // 환율 정보
+            document.getElementById('exchange-info').textContent = `한국 환산액 (1엔=${results.currentExchangeRate}원)`;
+
+            // 관세 표시/숨김
+            const customsRow = document.getElementById('customs-row');
+            const customsFeeElement = document.getElementById('result-customsFee');
+            if (results.totalCustomsFee > 0) {
+                customsRow.style.display = 'flex';
+                customsFeeElement.textContent = `₩${formatNumber(results.totalCustomsFee)}`;
+            } else {
+                customsRow.style.display = 'none';
+            }
+        }
+
+        function formatNumber(num) {
+            const roundedUp = Math.ceil(num / 100) * 100;
+            return new Intl.NumberFormat('ko-KR').format(roundedUp);
+        }
+
+        function formatYen(num) {
+            return new Intl.NumberFormat('ja-JP').format(Math.round(num));
+        }
+
+        function checkAgreements() {
+            const agreement1 = document.getElementById('agreement1').checked;
+            const agreement2 = document.getElementById('agreement2').checked;
+            const agreement3 = document.getElementById('agreement3').checked;
+            const allChecked = agreement1 && agreement2 && agreement3;
+
+            const button = document.getElementById('quoteButton');
+            const message = document.getElementById('agreementMessage');
+
+            if (allChecked) {
+                button.disabled = false;
+                button.className = 'w-full font-semibold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg gradient-pink text-white hover:opacity-90';
+                button.innerHTML = '<span class="text-lg">💬</span> 견적서 확인하기';
+                message.style.display = 'none';
+            } else {
+                button.disabled = true;
+                button.className = 'w-full font-semibold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg bg-gray-300 text-gray-500 cursor-not-allowed';
+                button.innerHTML = '<span class="text-lg">💬</span> 약관 동의 후 이용 가능';
+                message.style.display = 'block';
+            }
+        }
+
+        function toggleQuote() {
+            const container = document.getElementById('quoteContainer');
+            if (container.classList.contains('hidden')) {
+                generateQuote();
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function generateQuote() {
+            const date = new Date().toLocaleDateString('ko-KR');
+            const finalPrice = Math.ceil(results.finalTotal / 100) * 100;
+            const packageWeight = document.getElementById('packageWeight').value;
+            
+            const quote = `🌸 일본구매대행 견적서 🌸
+${date}
+
+📦 상품정보
+• 총 ${results.totalQuantity}개 상품: ¥${formatYen(results.totalItemPrice)}
+• 일본배송비: ¥${formatYen(results.totalDomesticShipping)}
+• 국제배송비: ¥${formatYen(results.totalInternationalShipping)}${packageWeight ? ` (${packageWeight}kg)` : ''}
+
+💰 수수료
+• 대행수수료(10%): ¥${formatYen(results.agencyFee)}
+• 결제수수료(3%): ¥${formatYen(results.totalPaymentFee)}
+${results.totalCustomsFee > 0 ? `• 관세/통관비: ₩${formatNumber(results.totalCustomsFee)}\n` : ''}━━━━━━━━━━━━━━━━━━━━
+💵 총 결제금액: ₩${formatNumber(finalPrice)}
+
+📌 안내사항
+• 환율기준: 1엔 = ${results.currentExchangeRate}원
+• 100원 단위 올림 적용
+• 환율 변동시 금액 조정 가능
+• 관세는 품목에 따라 다를 수 있습니다
+
+궁금한 점이 있으시면 언제든 문의해주세요! 😊`;
+
+            document.getElementById('quoteContent').textContent = quote;
+        }
+
+        function copyQuote() {
+            const quoteText = document.getElementById('quoteContent').textContent;
+            navigator.clipboard.writeText(quoteText).then(() => {
+                alert('견적서가 복사되었습니다! 📋');
+            }).catch(() => {
+                alert('복사에 실패했습니다. 직접 선택해서 복사해주세요.');
+            });
+        }
+    </script>
+</body>
+</html>
